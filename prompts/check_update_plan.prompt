@@ -1,0 +1,7 @@
+{agent_summary_description}
+It is {date}
+{agent_name}'s status: {agent_status}
+Observation: {observation}
+Summary of relevant context from {agent_name}'s memory:
+{agent_context}
+Should {agent_first_name} react to the observation, and if so, what would be an appropriate reaction?
