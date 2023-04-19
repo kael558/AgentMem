@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 
-from memory_stream import MemoryObject
+from base_memory import MemoryObject
 from retrieval import retrieval_function
 from utility import get_prompt_template, text_generate
 
@@ -14,8 +14,12 @@ class Plan(MemoryObject):
         self.location = location
 
     def decompose(self):
-        # Fine grain actions with smaller durations
-        pass
+        if self.duration < 15*60:  # 15 minutes
+            return [self]
+        prompt = get_prompt_template("prompts/decompose_plan.prompt", plan=self.nlp_description)
+        decomposed_plans = text_generate(prompt)
+        decomposed_plans = parse_plans_from_llm(decomposed_plans)
+        return decomposed_plans
 
 
 def get_situation_context(observer, observed_entity):
@@ -38,17 +42,10 @@ def check_update_plan(agent, observation, situation_context):
     response = text_generate(prompt)
 
     # TODO check if response is yes or no
-    return response.choices[0].text
+    return response
 
 
-def regenerate_plan(agent):
-    prompt = get_prompt_template("prompts/initial_plan.prompt",
-                                 agent_summary_description=agent.summary_description,
-                                 date=datetime.now().strftime("%m %d %H:%M %I"),
-                                 agent_first_name=agent.first_name
-                                 )
-
-    plans = text_generate(prompt)
+def parse_plans_from_llm(plans):
     plans = re.split(r',?\d+\)\s*', plans)[1:]
 
     plans = [plan.strip() for plan in plans]
@@ -58,19 +55,21 @@ def regenerate_plan(agent):
     return plans
 
 
-def decompose_plan(memory_stream):
-    plans = memory_stream.get_plans()
+def regenerate_plan(agent):
+    prompt = get_prompt_template("prompts/regenerate_plan.prompt",
+                                 agent_summary_description=agent.summary_description,
+                                 date=datetime.now().strftime("%m %d %H:%M %I"),
+                                 agent_first_name=agent.first_name
+                                 )
 
-    for plan in plans:
-        plan.decompose()
+    plans = text_generate(prompt)
 
+    return parse_plans_from_llm(plans)
 
 
 def update_plan(agent, observation, situation_context):
     if not check_update_plan(agent, observation, situation_context):
         return None
 
-
-
-
-    pass
+    plan = regenerate_plan(agent)
+    return plan

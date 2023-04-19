@@ -15,4 +15,6 @@ class MemoryObject:
         self.last_access_timestamp = datetime.now()
         self.importance = get_importance(nlp_description)
 
+    def update_last_access_timestamp(self):
+        self.last_access_timestamp = datetime.now()
 
