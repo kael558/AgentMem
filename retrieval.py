@@ -47,11 +47,10 @@ def get_score(query, memory_object):
                 alpha_importance * (importance - min_score) / diff])
 
 
-def retrieval_function(memory, query, n=3):
-    # Retrieve memory objects from query
+def retrieval_function(memory_stream, query, n=3):
     scores = []
 
-    for memory_object in memory:
+    for memory_object in memory_stream:
         score = get_score(query, memory_object)
         scores.append((score, memory_object))
     scores.sort(key=lambda x: x[0], reverse=True)
