@@ -41,7 +41,7 @@ def check_update_plan(agent, observation, situation_context):
     return response.choices[0].text
 
 
-def regenerate_plan(agent, observation, situation_context):
+def regenerate_plan(agent):
     prompt = get_prompt_template("prompts/initial_plan.prompt",
                                  agent_summary_description=agent.summary_description,
                                  date=datetime.now().strftime("%m %d %H:%M %I"),
@@ -60,7 +60,6 @@ def regenerate_plan(agent, observation, situation_context):
 
 def decompose_plan(memory_stream):
     plans = memory_stream.get_plans()
-
 
     for plan in plans:
         plan.decompose()

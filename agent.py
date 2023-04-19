@@ -1,6 +1,8 @@
 from base_memory import MemoryObject
 from plan import update_plan, Plan
 from reflection import reflect
+from retrieval import retrieval_function
+from utility import text_generate
 
 
 class MemoryStream:
@@ -26,20 +28,19 @@ class MemoryStream:
 
 
 class Agent:
-    def __init__(self, first_name, last_name, description):
+    def __init__(self, first_name, last_name, age, description):
         self.first_name = first_name
         self.last_name = last_name
-        self.description = description
+        self.age = age
         self.memory_stream = MemoryStream()
-        self.summary_description = ""
 
-    def start(self):
-        # initial plan
-        # decompose plan
-        # receive observation
-        # handle reflection
-        # handle plan change
-        pass
+        # Put initial description in agent
+        for desc in description.split("; "):
+            self.memory_stream.add(MemoryObject(desc))
+
+        # Initialize summary description
+        self.summary_description = ""
+        self.update_summary_description()
 
     def on_observation(self, observation):
         # Save observation in memory
@@ -58,19 +59,23 @@ class Agent:
 
 
 
-
     def update_summary_description(self):
-        query = self.name + "'s core characteristics."
-        """
-        cached summary =
-        name, age, and traits
-        name's core characteristics
-        name's current daily occupation
-        name's feeling about his/her recent progress in life
-        """
+        def _helper(query, question):
+            relevant_memories = retrieval_function(query, n=5)
+            prompt = question + "\n" + "\n-".join([memory.nlp_description for memory in relevant_memories])
+            response = text_generate(prompt)
+            return response
 
-    def summary_description(self):
-        pass
+
+
+        core_characteristics = _helper(self.get_full_name() + "'s core characteristics.", "How would one describe " + self.first_name + "'s core characteristics given the following statements?")
+        recent_progress = _helper(self.get_full_name() + "'s feeling about his/her recent progress in life.", "How would one describe " + self.first_name + "'s feeling about his/her recent progress in life given the following statements?")
+        daily_occupation = _helper(self.get_full_name() + "'s current daily occupation.", "How would one describe " + self.first_name + "'s current daily occupation given the following statements?")
+
+        self.summary_description = "Name: " + self.get_full_name() + "(age: " + self.age + ")\n" \
+                                   + core_characteristics + "\n" + recent_progress + "\n" + daily_occupation
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
+
+
