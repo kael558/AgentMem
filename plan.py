@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from memory_stream import MemoryObject
@@ -48,21 +49,13 @@ def regenerate_plan(agent, observation, situation_context):
                                  )
 
     plans = text_generate(prompt)
-    plans = re.
+    plans = re.split(r',?\d+\)\s*', plans)[1:]
 
-    pattern = r',?\s*\d+\)\s*'
-    for insight in insights:
-        match = re.match(pattern, insight)
+    plans = [plan.strip() for plan in plans]
 
-        # Creating a tuple from the text and the numbers
-        output_tuple = (match.group(1), tuple(int(n) for n in match.group(3).split(',')))
-
-    # Extract location, time, duration
-    for plan in plans:
-
-
-    Plan(plan, datetime.now(), 1, "home")
-
+    # TODO extract start time, duration, location
+    plans = [Plan(plan, datetime.now(), 1, "home") for plan in plans]
+    return plans
 
 
 def decompose_plan(memory_stream):
