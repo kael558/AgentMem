@@ -32,6 +32,7 @@ class MemoryStream:
 
     def decompose_plans(self):
         while True:
+            # TODO paper does just-in-time decomposition
             plans = self.get_decomposable_plans()
             if not plans:
                 break
@@ -81,7 +82,7 @@ class Agent:
 
     def update_summary_description(self):
         def _helper(query, question):
-            relevant_memories = retrieval_function(query, n=5)
+            relevant_memories = retrieval_function(self.memory_stream, query, n=5)
             prompt = question + "\n" + "\n-".join([memory.nlp_description for memory in relevant_memories])
             response = text_generate(prompt)
             return response

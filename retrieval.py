@@ -2,16 +2,13 @@ import numpy as np
 from numpy.linalg import norm
 from datetime import datetime
 
+from utility import text_embed
+
 
 def exponential_decay(t):
     if t == 0:
         return 9999999999
     return 0.99 ** t
-
-
-def cosine_similarity(A, B):
-    cosine = np.dot(A, B) / (norm(A) * norm(B))
-    return cosine
 
 
 def calculate_recency(memory_object):
@@ -20,11 +17,17 @@ def calculate_recency(memory_object):
     recency = exponential_decay((datetime.now() - memory_object.last_access_timestamp).total_seconds())
     return recency
 
+def cosine_similarity(A, B):
+    cosine = np.dot(A, B) / (norm(A) * norm(B))
+    return cosine
 
 def calculate_relevance(query, memory_object):
     # Calculate relevance of memory object
-    # Relevance is a value between 0 and 1 with a
-    relevance = cosine_similarity(query, memory_object.nlp_description)
+    # Relevance is a value between 0 and 1
+    query_embed = text_embed(query)
+    description_embed = text_embed(memory_object.nlp_description)
+
+    relevance = cosine_similarity(query_embed, description_embed)
     return relevance
 
 
