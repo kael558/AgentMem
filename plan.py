@@ -27,8 +27,8 @@ def get_situation_context(observer, observed_entity):
 def check_update_plan(agent, observation, situation_context):
     prompt = get_prompt_template("prompts/check_update_plan.prompt",
                                  agent_summary_description=agent.summary_description,
-                                 date=datetime.now().strftime("%m %d %H:%M:%I"),
-                                 agent_name=agent.name,
+                                 date=datetime.now().strftime("%m %d %H:%M %I"),
+                                 agent_name=agent.get_full_name(),
                                  agent_status=agent.status,
                                  observation=observation,
                                  agent_context=situation_context,
@@ -41,8 +41,28 @@ def check_update_plan(agent, observation, situation_context):
 
 
 def regenerate_plan(agent, observation, situation_context):
-    if not check_update_plan(agent, observation, situation_context):
-        return None
+    prompt = get_prompt_template("prompts/initial_plan.prompt",
+                                 agent_summary_description=agent.summary_description,
+                                 date=datetime.now().strftime("%m %d %H:%M %I"),
+                                 agent_first_name=agent.first_name
+                                 )
+
+    plans = text_generate(prompt)
+    plans = re.
+
+    pattern = r',?\s*\d+\)\s*'
+    for insight in insights:
+        match = re.match(pattern, insight)
+
+        # Creating a tuple from the text and the numbers
+        output_tuple = (match.group(1), tuple(int(n) for n in match.group(3).split(',')))
+
+    # Extract location, time, duration
+    for plan in plans:
+
+
+    Plan(plan, datetime.now(), 1, "home")
+
 
 
 def decompose_plan(memory_stream):

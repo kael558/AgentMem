@@ -1,4 +1,4 @@
-from memory_stream import MemoryObject
+from base_memory import MemoryObject
 from utility import get_prompt_template, text_generate
 import re
 from retrieval import retrieval_function
@@ -8,6 +8,7 @@ class Reflection(MemoryObject):
     def __init__(self, nlp_description, memory_objects):
         super().__init__(nlp_description)
         self.memory_objects = memory_objects
+
 
 def check_reflect(memory_stream):
     return memory_stream.importance > 10
@@ -37,12 +38,16 @@ def extract_insights_with_citations(agent, relevant_memories):
     insights = insights.split("\n")
 
     insights_as_tuples = []
-    pattern = r'^(.*)\s\((because of )([\d\s,]+)\)$'
+
     for insight in insights:
-        match = re.match(pattern, insight)
+        insight, citations = insight.split(" (because of ")
+        citations = citations[:-2]  # ).
+        citations = citations.split(", ")
+        citations = map(int, citations)
+        citations = [relevant_memories[i-1] for i in citations]
 
         # Creating a tuple from the text and the numbers
-        output_tuple = (match.group(1), tuple(int(n) for n in match.group(3).split(',')))
+        output_tuple = (insight, citations)
 
         insights_as_tuples.append(output_tuple)
     return insights_as_tuples

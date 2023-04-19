@@ -56,6 +56,9 @@ class Agent:
         if plan_changes:
             self.memory_stream.add_all(plan_changes)
 
+
+
+
     def update_summary_description(self):
         query = self.name + "'s core characteristics."
         """
