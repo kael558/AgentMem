@@ -31,6 +31,7 @@ class MemoryStream:
         return [memory_object for memory_object in self.memory if isinstance(memory_object, Plan) and memory_object.duration > 15*60]
 
     def decompose_plans(self):
+        # Decompose all existing plans in memory stream
         while True:
             # TODO paper does just-in-time decomposition
             plans = self.get_decomposable_plans()

@@ -11,7 +11,8 @@ class Reflection(MemoryObject):
 
 
 def check_reflect(memory_stream):
-    return memory_stream.importance > 10
+    # Reflect if rolling sum of importance is greater than 100
+    return memory_stream.rolling_sum_importance > 100
 
 
 def get_high_level_questions(memory_stream):
@@ -60,7 +61,7 @@ def reflect(agent, memory_stream):
     # Get high level questions
     questions = get_high_level_questions(memory_stream)
 
-    # Get relevant memories
+    # Get relevant memories to questions
     relevant_memories = []
     for question in questions:
         relevant_memories.append(retrieval_function(memory_stream, question, n=5))
